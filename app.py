@@ -37,32 +37,51 @@ st.divider()
 st.subheader("Model")
 
 c1, c2 = st.columns(2)
+
+lgbm_selected = st.session_state.model_choice == "LightGBM"
+lr_selected   = st.session_state.model_choice == "Logistic Regression"
+ 
 with c1:
-    with st.container(border=True):
-        st.markdown("**LightGBM**")
-        st.markdown("Better F1 (metric) : catches most churners without too many false alarms. " \
-        "Use this if you want to prioritize the highest-risk customers only.")
-        st.caption("Recall: The percentage of all actual churners the model catches")
-
+    st.markdown(f"""
+    <div class="model-card {'selected' if lgbm_selected else ''}">
+        <h4>LightGBM {'✓' if lgbm_selected else ''}</h4>
+        <p>Better F1 — catches most churners without too many false alarms.
+        Use this when retention budget is limited and you need to target the highest-risk customers only.</p>
+        <span class="badge">Optimized for F1 · class_weight='balanced'</span>
+    </div>
+    """, unsafe_allow_html=True)
+    if st.button("Select LightGBM", key="btn_lgbm", use_container_width=True,
+                 type="primary" if lgbm_selected else "secondary"):
+        st.session_state.model_choice = "LightGBM"
+        st.rerun()
+ 
 with c2:
-    with st.container(border=True):
-        st.markdown("**Logistic Regression**")
-        st.markdown("Higher recall — flags more customers as at-risk, including some who wouldn't have churned. Use this if missing a churner is the worst outcome.")
-        st.caption("F1: A balanced rating combining Recall (catching churners) and Precision (avoiding false alarms) into one score.")
-
-model_choice = st.radio(
-    "Pick one",
-    ["LightGBM", "Logistic Regression"],
-    horizontal=True,
-    label_visibility="collapsed"
-)
-model = lgbm if model_choice == "LightGBM" else lr
-
-st.caption(
-    "Risk thresholds: > 70% = high | 40–70% = medium | < 40% = low. " \
-    "These cutoffs are a starting point, in practice they'd be calibrated to the cost of a retention action vs. losing a customer."
-)
-
+    st.markdown(f"""
+    <div class="model-card {'selected' if lr_selected else ''}">
+        <h4>Logistic Regression {'✓' if lr_selected else ''}</h4>
+        <p>Higher recall — flags more customers as at-risk, including some who wouldn't have churned.
+        Use this when missing a churner is the worst outcome.</p>
+        <span class="badge">Optimized for Recall · class_weight='balanced'</span>
+    </div>
+    """, unsafe_allow_html=True)
+    if st.button("Select Logistic Regression", key="btn_lr", use_container_width=True,
+                 type="primary" if lr_selected else "secondary"):
+        st.session_state.model_choice = "Logistic Regression"
+        st.rerun()
+ 
+model = lgbm if st.session_state.model_choice == "LightGBM" else lr
+ 
+st.markdown("""
+<p style="font-size:12px; color:#555; margin-top:6px; line-height:1.8">
+    Risk thresholds &nbsp;·&nbsp;
+    <span style="color:#e55">▲ &gt;70%</span> high risk &nbsp;
+    <span style="color:#e90">● 40–70%</span> medium risk &nbsp;
+    <span style="color:#4a4">▼ &lt;40%</span> low risk<br>
+    These cutoffs are a starting point — in practice they'd be calibrated
+    to the cost of a retention action vs. the revenue lost from a churned customer.
+</p>
+""", unsafe_allow_html=True)
+ 
 st.divider()
 
 # ── Input mode ────────────────────────────────────────────────────────────────
