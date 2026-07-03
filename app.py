@@ -54,7 +54,7 @@ lr_selected   = st.session_state.model_choice == "Logistic Regression"
 c1, c2 = st.columns(2)
 with c1:
     with st.container(border=True):
-        st.markdown("**LightGBM**")
+        st.markdown("### LightGBM")
         st.markdown("Better F1 (metric) : catches most churners without too many false alarms. "
         "Use this if you want to prioritize the highest-risk customers only.")
         st.caption("F1: A balanced rating combining Recall (catching churners) and Precision (avoiding false alarms) into one score.")
@@ -65,7 +65,7 @@ with c1:
 
 with c2:
     with st.container(border=True):
-        st.markdown("**Logistic Regression**")
+        st.markdown("### Logistic Regression")
         st.markdown("Higher recall : flags more customers as at-risk, including some who wouldn't have churned. Use this if missing a churner is the worst outcome.")
         st.caption("Recall: The percentage of all actual churners the model catches")
     if st.button("Select Logistic Regression", key="btn_lr", use_container_width=True,
@@ -144,7 +144,7 @@ with tab_manual:
             st.markdown(f"### {risk_label(proba)}")
  
             if proba > 0.7:
-                st.error("This customer matches the high-churn profile closely — short tenure, high bill, or no long-term contract.")
+                st.error("This customer matches the high-churn profile closely : short tenure, high bill, or no long-term contract.")
             elif proba > 0.4:
                 st.warning("Some churn signals present but not conclusive.")
             else:
