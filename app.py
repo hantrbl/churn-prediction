@@ -28,6 +28,10 @@ def risk_label(p):
     elif p > 0.4: return "🟡 Medium risk"
     else:         return "🟢 Low risk"
 
+# ── Session state ─────────────────────────────────────────────────────────────
+if "model_choice" not in st.session_state:
+    st.session_state.model_choice = "LightGBM"
+
 # ── Header ────────────────────────────────────────────────────────────────────
 st.title("Churn Predictor")
 st.caption("Telco Customer Churn  · Kaggle dataset · scikit-learn + LightGBM")
