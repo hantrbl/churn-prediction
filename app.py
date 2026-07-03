@@ -57,7 +57,7 @@ with c1:
         st.markdown("**LightGBM**")
         st.markdown("Better F1 (metric) : catches most churners without too many false alarms. "
         "Use this if you want to prioritize the highest-risk customers only.")
-        st.caption("Recall: The percentage of all actual churners the model catches")
+        st.caption("F1: A balanced rating combining Recall (catching churners) and Precision (avoiding false alarms) into one score.")
     if st.button("Select LightGBM", key="btn_lgbm", use_container_width=True,
                  type="primary" if lgbm_selected else "secondary"):
         st.session_state.model_choice = "LightGBM"
@@ -67,13 +67,24 @@ with c2:
     with st.container(border=True):
         st.markdown("**Logistic Regression**")
         st.markdown("Higher recall : flags more customers as at-risk, including some who wouldn't have churned. Use this if missing a churner is the worst outcome.")
-        st.caption("F1: A balanced rating combining Recall (catching churners) and Precision (avoiding false alarms) into one score.")
+        st.caption("Recall: The percentage of all actual churners the model catches")
     if st.button("Select Logistic Regression", key="btn_lr", use_container_width=True,
                  type="primary" if lr_selected else "secondary"):
         st.session_state.model_choice = "Logistic Regression"
         st.rerun()
 
 model = lgbm if st.session_state.model_choice == "LightGBM" else lr
+
+st.markdown("""
+<p style="font-size:12px; color:#555; margin-top:6px; line-height:1.8">
+    Risk thresholds &nbsp;·&nbsp;
+    <span style="color:#e55">▲ &gt;70%</span> high risk &nbsp;
+    <span style="color:#e90">● 40–70%</span> medium risk &nbsp;
+    <span style="color:#4a4">▼ &lt;40%</span> low risk
+</p>
+""", unsafe_allow_html=True)
+
+st.divider()
 
 # ── Input mode ────────────────────────────────────────────────────────────────
 st.subheader("Customer data")
