@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import joblib
 
-st.set_page_config(page_title="Churn Predictor", page_icon="📡", layout="wide")
+st.set_page_config(page_title="Churn Predictor", page_icon="📡", layout="centered")
 
 @st.cache_resource
 def load_models():
@@ -30,7 +30,7 @@ def risk_label(p):
 
 # ── Header ────────────────────────────────────────────────────────────────────
 st.title("Churn Predictor")
-st.caption("Telco Customer Churn · scikit-learn + LightGBM · Kaggle dataset")
+st.caption("Telco Customer Churn  · Kaggle dataset · scikit-learn + LightGBM")
 st.divider()
 
 # ── Model selection ───────────────────────────────────────────────────────────
@@ -40,14 +40,15 @@ c1, c2 = st.columns(2)
 with c1:
     with st.container(border=True):
         st.markdown("**LightGBM**")
-        st.markdown("Better F1 — catches most churners without too many false alarms. Use this if you want to prioritize the highest-risk customers only.")
-        st.caption("Trained with class_weight='balanced'")
+        st.markdown("Better F1 (metric) : catches most churners without too many false alarms. " \
+        "Use this if you want to prioritize the highest-risk customers only.")
+        st.caption("Recall: The percentage of all actual churners the model catches")
 
 with c2:
     with st.container(border=True):
         st.markdown("**Logistic Regression**")
         st.markdown("Higher recall — flags more customers as at-risk, including some who wouldn't have churned. Use this if missing a churner is the worst outcome.")
-        st.caption("Trained with class_weight='balanced'")
+        st.caption("F1: A balanced rating combining Recall (catching churners) and Precision (avoiding false alarms) into one score.")
 
 model_choice = st.radio(
     "Pick one",
@@ -58,8 +59,8 @@ model_choice = st.radio(
 model = lgbm if model_choice == "LightGBM" else lr
 
 st.caption(
-    "Risk thresholds: > 70% = high, 40–70% = medium, < 40% = low. "
-    "These cutoffs are a starting point — in practice they'd be calibrated to the cost of a retention action vs. losing a customer."
+    "Risk thresholds: > 70% = high | 40–70% = medium | < 40% = low. " \
+    "These cutoffs are a starting point, in practice they'd be calibrated to the cost of a retention action vs. losing a customer."
 )
 
 st.divider()
@@ -116,11 +117,11 @@ with tab_manual:
         proba = predict(input_df, model)[0]
         st.divider()
 
-        m1, m2 = st.columns([1, 2])
-        with m1:
+        _, center, _ = st.columns([1, 2, 1])
+        with center:
             st.metric("Churn probability", f"{proba:.1%}")
-            st.markdown(f"**{risk_label(proba)}**")
-        with m2:
+            st.markdown(f"### {risk_label(proba)}")
+ 
             if proba > 0.7:
                 st.error("This customer matches the high-churn profile closely — short tenure, high bill, or no long-term contract.")
             elif proba > 0.4:
@@ -164,66 +165,3 @@ with tab_csv:
 
 st.divider()
 st.caption("Thresholds: > 70% high · 40–70% medium · < 40% low")
-
-
-
-# import streamlit as st
-# import pandas as pd
-# import joblib
-
-# # Load models
-# preprocessor = joblib.load('models/preprocessor.pkl')
-# lgbm  = joblib.load('models/lightgbm_balanced.pkl')
-# lr    = joblib.load('models/logistic_regression_balanced.pkl')
-
-# st.title("Telco Customer Churn Predictor")
-# st.markdown("Fill in the customer details to estimate churn probability.")
-
-# # Inputs
-# col1, col2 = st.columns(2)
-
-# with col1:
-#     tenure          = st.slider("Tenure (months)", 0, 72, 12)
-#     monthly_charges = st.slider("Monthly Charges ($)", 18, 120, 65)
-#     contract        = st.selectbox("Contract", ["Month-to-month", "One year", "Two year"])
-#     internet        = st.selectbox("Internet Service", ["DSL", "Fiber optic", "No"])
-
-# with col2:
-#     payment         = st.selectbox("Payment Method", [
-#                         "Electronic check", "Mailed check",
-#                         "Bank transfer (automatic)", "Credit card (automatic)"])
-#     online_security = st.selectbox("Online Security", ["Yes", "No", "No internet service"])
-#     tech_support    = st.selectbox("Tech Support", ["Yes", "No", "No internet service"])
-#     senior          = st.selectbox("Senior Citizen", [0, 1])
-
-# model_choice = st.radio("Model", ["LightGBM (balanced F1)", "Logistic Regression (max Recall)"])
-
-# if st.button("Predict"):
-#     input_data = pd.DataFrame([{
-#         'SeniorCitizen':    senior,
-#         'Partner':          'No',
-#         'Dependents':       'No',
-#         'tenure':           tenure,
-#         'InternetService':  internet,
-#         'OnlineSecurity':   online_security,
-#         'OnlineBackup':     'No',
-#         'DeviceProtection': 'No',
-#         'TechSupport':      tech_support,
-#         'Contract':         contract,
-#         'PaperlessBilling': 'Yes',
-#         'PaymentMethod':    payment,
-#         'MonthlyCharges':   monthly_charges,
-#         'auto_payment':     1 if 'automatic' in payment else 0
-#     }])
-
-#     model = lgbm if "LightGBM" in model_choice else lr
-#     proba = model.predict_proba(preprocessor.transform(input_data))[0][1]
-
-#     st.metric("Churn Probability", f"{proba:.1%}")
-
-#     if proba > 0.7:
-#         st.error("🔴 High risk — priority retention action needed")
-#     elif proba > 0.4:
-#         st.warning("🟡 Medium risk — consider a retention offer")
-#     else:
-#         st.success("🟢 Low risk — no action needed")
