@@ -40,7 +40,7 @@ def risk_label(p):
 # ── Header ────────────────────────────────────────────────────────────────────
 st.title("Churn Predictor")
 st.caption("Telco Customer Churn  · Kaggle dataset · scikit-learn + LightGBM")
-st.divider()
+
 
 # ── Model selection ───────────────────────────────────────────────────────────
 st.subheader("Model")
@@ -55,7 +55,7 @@ c1, c2 = st.columns(2)
 with c1:
     with st.container(border=True):
         st.markdown("### LightGBM")
-        st.markdown("Better F1 (metric) : catches most churners without too many false alarms. "
+        st.markdown("Better F1 : catches most churners without too many false alarms. " \
         "Use this if you want to prioritize the highest-risk customers only.")
         st.caption("F1: A balanced rating combining Recall (catching churners) and Precision (avoiding false alarms) into one score.")
     if st.button("Select LightGBM", key="btn_lgbm", use_container_width=True,
@@ -66,7 +66,8 @@ with c1:
 with c2:
     with st.container(border=True):
         st.markdown("### Logistic Regression")
-        st.markdown("Higher recall : flags more customers as at-risk, including some who wouldn't have churned. Use this if missing a churner is the worst outcome.")
+        st.markdown("Higher recall : flags more customers as at-risk, including some who wouldn't have churned. " \
+        "Use this if missing a churner is the worst outcome.")
         st.caption("Recall: The percentage of all actual churners the model catches")
     if st.button("Select Logistic Regression", key="btn_lr", use_container_width=True,
                  type="primary" if lr_selected else "secondary"):
@@ -75,16 +76,6 @@ with c2:
 
 model = lgbm if st.session_state.model_choice == "LightGBM" else lr
 
-st.markdown("""
-<p style="font-size:12px; color:#555; margin-top:6px; line-height:1.8">
-    Risk thresholds &nbsp;·&nbsp;
-    <span style="color:#e55">▲ &gt;70%</span> high risk &nbsp;
-    <span style="color:#e90">● 40–70%</span> medium risk &nbsp;
-    <span style="color:#4a4">▼ &lt;40%</span> low risk
-</p>
-""", unsafe_allow_html=True)
-
-st.divider()
 
 # ── Input mode ────────────────────────────────────────────────────────────────
 st.subheader("Customer data")
@@ -185,4 +176,11 @@ with tab_csv:
             )
 
 st.divider()
-st.caption("Thresholds: > 70% high · 40–70% medium · < 40% low")
+st.markdown("""
+<p style="font-size:12px; color:#555; margin-top:6px; line-height:1.8">
+    Risk thresholds &nbsp;·&nbsp;
+    <span style="color:#e55">▲ &gt;70%</span> high risk &nbsp;
+    <span style="color:#e90">● 40–70%</span> medium risk &nbsp;
+    <span style="color:#4a4">▼ &lt;40%</span> low risk
+</p>
+""", unsafe_allow_html=True)
