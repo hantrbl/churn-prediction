@@ -14,6 +14,10 @@ Since missing a churner is more costly than wrongly flagging a loyal customer, t
 
 The model outputs a probability score, so the retention team can prioritize by risk level rather than just getting a binary yes/no.
 
+## App Preview
+
+![Streamlit Interactive Dashboard](assets/churn.gif)
+*Interactive Streamlit interface showing real-time customer risk scoring and model switching.*
 
 ---
 
